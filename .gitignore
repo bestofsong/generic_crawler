@@ -118,3 +118,4 @@ dmypy.json
 .idea/usage.statistics.xml
 .idea/tasks.xml
 .idea/libraries/**/*.xml
+.idea/misc.xml
