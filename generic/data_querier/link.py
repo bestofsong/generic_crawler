@@ -1,5 +1,9 @@
 import scrapy
 from .comp import query as comp_query
+from scrapy.spidermiddlewares.httperror import HttpError
+from twisted.internet.error import DNSLookupError
+from twisted.internet.error import TimeoutError, TCPTimedOutError
+
 
 def query(query_node, c):
     xpath = query_node['xpath']
@@ -46,5 +50,27 @@ def query(query_node, c):
     qc.val += 1
     qc.unlock()
 
-    yield scrapy.Request(abs_link, link_request_parser)
+    def errback_http(failure):
+        # log all failures
+        c.logger.error(repr(failure))
+
+        # in case you want to do something special for some errors,
+        # you may need the failure's type:
+
+        if failure.check(HttpError):
+            # these exceptions come from HttpError spider middleware
+            # you can get the non-200 response
+            response = failure.value.response
+            c.logger.error('HttpError on %s', response.url)
+
+        elif failure.check(DNSLookupError):
+            # this is the original request
+            request = failure.request
+            c.logger.error('DNSLookupError on %s', request.url)
+
+        elif failure.check(TimeoutError, TCPTimedOutError):
+            request = failure.request
+            c.logger.error('TimeoutError on %s', request.url)
+
+    yield scrapy.Request(url=abs_link, callback=link_request_parser, errback=errback_http)
 

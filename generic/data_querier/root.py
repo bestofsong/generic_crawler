@@ -14,7 +14,8 @@ def query(query_node, c):
     cc.root_data = d
 
     res = comp_query(query_node, cc)
-    if res is not None:
-        for item in res:
-            yield item
+    if res is None:
+        return
+    for item in res:
+        yield item
 

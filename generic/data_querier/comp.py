@@ -1,4 +1,4 @@
-from .ctx import Ctx, Qc
+from .ctx import Qc
 from .choose_querier import choose_querier
 
 def query(query_node, c):
