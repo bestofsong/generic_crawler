@@ -18,7 +18,8 @@ class Ctx:
                   ctx_data=self.ctx_data,
                   ctx_node=self.ctx_node,
                   query_counter=self.query_counter,
-                  logger=self.logger)
+                  logger=self.logger,
+                  resp=self.resp)
         return ret
 
 class Qc:

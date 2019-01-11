@@ -10,7 +10,7 @@ def query(query_node, c):
     subq = query_node.get('query', [])
 
     ctx_node = c.ctx_node
-    qc = c.qc
+    qc = c.query_counter
     resp = c.resp
     root_data = c.root_data
 
@@ -52,6 +52,10 @@ def query(query_node, c):
 
     def errback_http(failure):
         # log all failures
+        qc.lock()
+        qc.val -= 1
+        qc.unlock()
+
         c.logger.error(repr(failure))
 
         # in case you want to do something special for some errors,
@@ -72,5 +76,6 @@ def query(query_node, c):
             request = failure.request
             c.logger.error('TimeoutError on %s', request.url)
 
+    c.logger.info('spawning new request: %s', abs_link)
     yield scrapy.Request(url=abs_link, callback=link_request_parser, errback=errback_http)
 

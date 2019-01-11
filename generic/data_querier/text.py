@@ -8,7 +8,6 @@ def query(query_node, c):
     is_multivar = query_node.get('multivar', False)
     scope = query_node.get('scope', None)
     merge = query_node.get('merge', None)
-    subq = query_node.get('query', None)
     separator = merge.get('separator', '') if merge is not None else ''
 
     if field is not None and not isinstance(field, list):
@@ -33,10 +32,16 @@ def query(query_node, c):
             if is_multivar:
                 ctx_data[scope].append(value)
             else:
-                if len(ctx_data[scope]) == 0:
-                    ctx_data[scope] = subs
+                # in this case new scope is supposed to exists
+                if field is None:
+                    if len(ctx_data[scope]) == 0:
+                        ctx_data[scope] = value
+                    else:
+                        ctx_data[scope] += separator + value
                 else:
-                    ctx_data[scope] += separator + subs
+                    prop = field[0]['path']
+                    type_ = field[0]['type']
+                    ctx_data[prop] = from_str(value, type_)
         else:
             p = re.compile(matcher, re.MULTILINE | re.UNICODE)
             it = p.finditer(value)

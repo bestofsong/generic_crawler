@@ -19,7 +19,7 @@ def query(query_node, c):
         c.logger.error('invalid attr node, missing field: %s' % query_node)
         return
 
-    attributes = node.attrib()
+    attributes = node.attrib
     if attributes is None:
         return
 

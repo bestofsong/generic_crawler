@@ -35,6 +35,8 @@ class GenericSpider(scrapy.Spider):
         for item in query_res:
             yield item
 
+        if link is None:
+            return
         follow_url = response.xpath(link).get()
         if follow_url is not None and not isinstance(follow_url, str):
             raise ValueError('下一页链接查询失败: %s' % follow_url)
