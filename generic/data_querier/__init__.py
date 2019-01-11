@@ -1,1 +1,1 @@
-__all__ = ['attr', 'comp', 'link', 'root', 'text', 'ctx']
+__all__ = ['attr', 'comp', 'link', 'root', 'choose_querier', 'scope', 'text', 'ctx']

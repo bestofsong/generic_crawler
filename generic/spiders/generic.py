@@ -30,8 +30,9 @@ class GenericSpider(scrapy.Spider):
         # self.logger.info('Got successful response from {}'.format(response.url))
         link = self.config_data['link']
         q = self.config_data['query']
-        ctx = query_ctx.Ctx(ctx_node=response)
-        for item in root_query.query(q, ctx):
+        ctx = query_ctx.Ctx(ctx_node=response, logger=self.logger, resp=response)
+        query_res = root_query.query(q, ctx)
+        for item in query_res:
             yield item
 
         follow_url = response.xpath(link).get()

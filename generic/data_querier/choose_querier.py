@@ -1,6 +1,6 @@
 from . import text, attr, comp, link
 
-def get_querier(type):
+def choose_querier(type):
     if type == 'text':
         return text
     elif type == 'attr':
