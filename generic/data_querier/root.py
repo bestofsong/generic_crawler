@@ -1,3 +1,4 @@
+from scrapy.utils.response import get_base_url
 from .ctx import Qc
 from .comp import query as comp_query
 
@@ -8,9 +9,9 @@ def query(query_node, c):
     xpath = query_node['xpath']
 
     nodes = c.ctx_node.xpath(xpath)
-    c.logger.info('当前页对象数量: %d' % len(nodes))
+    page = get_base_url(c.resp)
+    c.logger.info('page: %s' % page)
     for ii, n in enumerate(nodes):
-        c.logger.info(' 处理对象: %d' % ii)
         cc = c.dup()
         qc = Qc(0)
         cc.query_counter = qc

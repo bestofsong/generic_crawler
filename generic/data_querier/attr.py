@@ -11,10 +11,11 @@ def query(query_node, c):
         ctx_data[scope] = dict()
         ctx_data = ctx_data[scope]
 
-    node = c.ctx_node.xpath(xpath)[0] if xpath is not None else c.ctx_node
-    if node is None:
-        c.logger.error('xpath match none: %s' % xpath)
+    nodes = c.ctx_node.xpath(xpath) if xpath is not None else [c.ctx_node]
+    if xpath is not None and len(nodes) == 0:
+        c.logger.warn('xpath match none: %s' % xpath)
         return
+    node = nodes[0]
     if field is None:
         c.logger.error('invalid attr node, missing field: %s' % query_node)
         return

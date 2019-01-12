@@ -46,7 +46,7 @@ def query(query_node, c):
                     type_ = field[0]['type']
                     ctx_data[prop] = from_str(value, type_)
         else:
-            p = re.compile(matcher, re.MULTILINE | re.UNICODE)
+            p = re.compile(matcher, re.MULTILINE | re.UNICODE | re.IGNORECASE)
             it = p.finditer(value)
             for m in it:
                 if field is None:

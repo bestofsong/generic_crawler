@@ -8,6 +8,16 @@ from twisted.internet.error import TimeoutError, TCPTimedOutError
 def query(query_node, c):
     xpath = query_node['xpath']
     subq = query_node.get('query', [])
+    field = query_node.get('field', None)
+    matcher = query_node.get('matcher', None)
+
+    if matcher is not None:
+        raise ValueError('link查询不支持regex和多字段')
+    if isinstance(field, list):
+        if len(field) > 1;
+            raise ValueError('link查询不支持regex和多字段')
+        else:
+            field = field[0]
 
     ctx_node = c.ctx_node
     qc = c.query_counter
@@ -21,6 +31,10 @@ def query(query_node, c):
     if len(link) <= 0:
         raise ValueError('failed to extract link')
     abs_link = resp.urljoin(link)
+
+    if field is not None:
+        prop = field['path']
+        c.ctx_data[prop] = abs_link
 
     def link_request_parser(next_resp):
         cc = c.dup()
@@ -39,11 +53,7 @@ def query(query_node, c):
             qc.val = -1
             qc.unlock()
             yield root_data
-        elif qc.val > 0:
-            print('query_counter: %d > 0, meaning subquery is ongoing...' % qc.val)
-            qc.unlock()
         else:
-            print('query_counter: %d < 0, meaning subquery already finished, rarely happens...' % qc.val)
             qc.unlock()
 
     qc.lock()
@@ -76,6 +86,6 @@ def query(query_node, c):
             request = failure.request
             c.logger.error('TimeoutError on %s', request.url)
 
-    c.logger.info('spawning new request: %s', abs_link)
+    c.logger.debug('spawning new request: %s', abs_link)
     yield scrapy.Request(url=abs_link, callback=link_request_parser, errback=errback_http)
 

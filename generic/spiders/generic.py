@@ -35,6 +35,8 @@ class GenericSpider(scrapy.Spider):
         for item in query_res:
             yield item
 
+        if getattr(self, 'nofollow', None) == 'true':
+            return
         if link is None:
             return
         follow_url = response.xpath(link).get()
