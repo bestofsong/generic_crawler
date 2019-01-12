@@ -3,6 +3,8 @@ def from_str(s, t):
         return str(s)
     elif s is not None and t == 'number':
         return int(s)
+    elif s is not None and (t == 'float' or t == 'double'):
+        return float(s)
     elif t == 'boolean':
         return True if s else False
     else:

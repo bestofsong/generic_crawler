@@ -15,7 +15,10 @@ def query(query_node, c):
 
     ctx_data = c.ctx_data
     if scope is not None:
-        if is_multivar:
+        if ctx_data.get(scope, None) is not None:
+            if is_multivar or field is not None:
+                ctx_data = ctx_data[scope]
+        elif is_multivar:
             ctx_data[scope] = []
             ctx_data = ctx_data[scope]
         elif field is None:
@@ -24,13 +27,20 @@ def query(query_node, c):
             ctx_data[scope] = dict()
             ctx_data = ctx_data[scope]
 
+    # print(xpath)
+    # print(is_multivar)
+    # print(matcher)
+    # print(field)
+    # print(ctx_data)
+    # print(scope)
+
     node = c.ctx_node.xpath(xpath)
     for n in node:
         value = n.get()
         # in this case new scope is supposed to exists
         if matcher is None:
             if is_multivar:
-                ctx_data[scope].append(value)
+                ctx_data.append(value)
             else:
                 # in this case new scope is supposed to exists
                 if field is None:
@@ -51,7 +61,7 @@ def query(query_node, c):
                         if subs is None:
                             continue
                         if is_multivar:
-                            ctx_data[scope].append(subs)
+                            ctx_data.append(subs)
                         else:
                             if len(ctx_data[scope]) == 0:
                                 ctx_data[scope] = subs
@@ -60,9 +70,12 @@ def query(query_node, c):
                 else:
                     obj = dict()
                     for ii, fld in enumerate(field):
-                        str_value = m.group(ii + 1)
                         prop = fld['path']
                         type_ = fld['type']
+                        if type_ == 'boolean':
+                            obj[prop] = True
+                            continue
+                        str_value = m.group(ii + 1)
                         value = from_str(str_value, type_)
                         obj[prop] = value
                     if is_multivar:
