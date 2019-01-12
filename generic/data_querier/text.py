@@ -2,7 +2,7 @@ import re
 from ..data_type.from_str import from_str
 
 def query(query_node, c):
-    xpath = query_node['xpath']
+    xpath = query_node.get('xpath', None)
     matcher = query_node.get('matcher', None)
     field = query_node.get('field', None)
     is_multivar = query_node.get('multivar', False)
@@ -27,7 +27,7 @@ def query(query_node, c):
             ctx_data[scope] = dict()
             ctx_data = ctx_data[scope]
 
-    node = c.ctx_node.xpath(xpath)
+    node = c.ctx_node.xpath(xpath) if xpath is not None else c.ctx_node
     for n in node:
         value = n.get()
         # in this case new scope is supposed to exists
@@ -53,6 +53,7 @@ def query(query_node, c):
                     for subs in m.groups(None):
                         if subs is None:
                             continue
+                        subs = subs.strip()
                         if is_multivar:
                             ctx_data.append(subs)
                         else:
@@ -69,6 +70,9 @@ def query(query_node, c):
                             obj[prop] = True
                             continue
                         str_value = m.group(ii + 1)
+                        if str_value is None:
+                            continue
+                        str_value = str_value.strip()
                         value = from_str(str_value, type_)
                         obj[prop] = value
                     if is_multivar:

@@ -36,4 +36,3 @@ def query(query_node, c):
             yield d
         else:
             qc.unlock()
-

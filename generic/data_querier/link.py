@@ -14,7 +14,7 @@ def query(query_node, c):
     if matcher is not None:
         raise ValueError('link查询不支持regex和多字段')
     if isinstance(field, list):
-        if len(field) > 1;
+        if len(field) > 1:
             raise ValueError('link查询不支持regex和多字段')
         else:
             field = field[0]

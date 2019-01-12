@@ -1,5 +1,5 @@
 def choose_querier(type):
-    from . import text, attr, comp, link, scope
+    from . import text, attr, comp, link, scope, article
 
     if type == 'text':
         return text
@@ -11,5 +11,7 @@ def choose_querier(type):
         return link
     elif type == 'scope':
         return scope
+    elif type == 'article':
+        return article
     else:
         raise ValueError('get_querier type')

@@ -11,7 +11,7 @@
           "id": {
             "path": "id",
             "matcher": "question-summary-([0-9]+)",
-            "type": "number"
+            "type": "long"
           }
         }
       },
@@ -30,7 +30,7 @@
         "type": "text",
         "xpath": "div[@class='summary']/div[@class='bounty-indicator']/text()",
         "matcher": "([0-9]+)",
-        "field": { "path": "bounty", "type": "number" }
+        "field": { "path": "bounty", "type": "int" }
       },
       {
         "type": "link",
@@ -68,7 +68,7 @@
                   "type": "text",
                   "xpath": "//tr/td[preceding-sibling::td/p[text() = 'viewed']][1]/p//b/text()",
                   "matcher": "([0-9]+)",
-                  "field": { "path": "viewed", "type": "number" }
+                  "field": { "path": "viewed", "type": "long" }
                 },
                 {
                   "type": "comp",
@@ -117,7 +117,7 @@
                       "field": {
                         "data-answerid": {
                           "path": "id",
-                          "type": "number"
+                          "type": "long"
                         }
                       }
                     },

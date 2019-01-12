@@ -9,13 +9,13 @@
         "type": "text",
         "xpath": ".//tr[3]/td[2]/font[@*]/text()",
         "matcher": "日期：(?:[-0-9]+)\\s*点击：([0-9]+)",
-        "field": { "path": "click", "type": "number" }
+        "field": { "path": "click", "type": "long" }
       },
       {
         "type": "text",
         "xpath": ".//tr[2]/td[2]/b/a/@href",
         "matcher": "/(\\d+)\\.",
-        "field": { "path": "id", "type": "number" }
+        "field": { "path": "id", "type": "long" }
       },
       {
         "type": "link",
@@ -42,103 +42,92 @@
                 }
               }
             }, {
-              "type": "text",
-              "xpath": ".//p[text()[contains(., '◎译　　名')]]/text()",
-              "matcher": "◎译　　名　(.+)",
-              "field": { "path": "translated_name", "type": "text" }
-            }, {
-              "type": "text",
-              "xpath": ".//p[text()[contains(., '◎片　　名')]]/text()",
-              "matcher": "◎片　　名　(.+)",
-              "field": { "path": "name", "type": "text" }
-            }, {
-              "type": "text",
-              "xpath": ".//p[text()[contains(., '◎年　　代')]]/text()",
-              "matcher": "◎年　　代　.*?(\\d\\d\\d\\d)",
-              "field": { "path": "year", "type": "number" }
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎产　　地')]]/text()",
-                "matcher": "◎产　　地　(.+)",
-                "field": { "path": "region", "type": "text" }
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎类　　别')]]/text()",
-                "matcher": "◎类　　别　(.+)",
-                "field": { "path": "category", "type": "keyword" }
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎语　　言')]]/text()",
-                "matcher": "◎语　　言　(.+)",
-                "field": { "path": "language", "type": "keyword" }
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎字　　幕')]]/text()",
-                "matcher": "◎字　　幕　(.+)",
-                "field": { "path": "subtitle_lang", "type": "string" }
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎上映日期')]]/text()",
-                "matcher": "([-0-9]+)\\(([^(]+)\\)",
-                "scope": "release_date",
-                "multivar": true,
-                "field": [
-                  { "path": "date", "type": "date" },
-                  { "path": "region", "type": "string" }]
-            }, {
-                "type": "scope",
-                "scope": "rating",
-                "query": [{
+              "type": "article",
+              "xpath": ".//p/text()|.//span/text()|.//font/text()",
+              "query": [
+                {
                   "type": "text",
-                  "xpath": ".//p[text()[contains(., '◎豆瓣评分')]]/text()",
-                  "matcher": "◎豆瓣评分　([0-9.]+)/([0-9]+)(?: from )?([0-9]+) (?:users|votes)",
-                  "scope": "douban",
-                  "field": [
-                    { "path": "score", "type": "float" },
-                    { "path": "full_score", "type": "number" },
-                    { "path": "population", "type": "number" }
-                  ]
+                  "matcher": "◎片　　名　(.+)\\n",
+                  "field": { "path": "name", "type": "text" }
                 }, {
                   "type": "text",
-                  "xpath": ".//p[text()[contains(., '◎IMDb评分')]]/text()",
-                  "matcher": "◎IMDb评分　([0-9.]+)/([0-9]+)(?: from )?([0-9]+) (?:users|votes)",
-                  "scope": "imdb",
+                  "matcher": "◎年　　代　.*?(\\d\\d\\d\\d)\\n",
+                  "field": {
+                    "path": "year",
+                    "type": "int"
+                  }
+                }, {
+                  "type": "text",
+                  "matcher": "◎产　　地　(.+)\\n",
+                  "field": { "path": "region", "type": "text" }
+                }, {
+                  "type": "text",
+                  "matcher": "◎类　　别　(.+)\\n",
+                  "field": { "path": "category", "type": "keyword" }
+                }, {
+                  "type": "text",
+                  "matcher": "◎语　　言　(.+)\\n",
+                  "field": { "path": "language", "type": "keyword" }
+                }, {
+                  "type": "text",
+                  "matcher": "◎字　　幕　(.+)\\n",
+                  "field": { "path": "subtitle_lang", "type": "string" }
+                }, {
+                  "type": "text",
+                  "matcher": "◎上映日期\\s*([-0-9]+)\\(([^(]+)\\)(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?\\s*\\n",
+                  "scope": "release_date",
+                  "multivar": true,
                   "field": [
-                    { "path": "score", "type": "float" },
-                    { "path": "full_score", "type": "number" },
-                    { "path": "population", "type": "number" }
+                    { "path": "date", "type": "date" },
+                    { "path": "region", "type": "string" }
                   ]
+                }, {
+                  "type": "scope",
+                  "scope": "rating",
+                  "query": [{
+                    "type": "text",
+                    "matcher": "◎豆瓣评分　([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n",
+                    "scope": "douban",
+                    "field": [
+                      { "path": "score", "type": "float" },
+                      { "path": "full_score", "type": "int" },
+                      { "path": "population", "type": "long" }
+                    ]
+                  }, {
+                    "type": "text",
+                    "matcher": "◎IMDb评分　([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n",
+                    "scope": "imdb",
+                    "field": [
+                      { "path": "score", "type": "float" },
+                      { "path": "full_score", "type": "int" },
+                      { "path": "population", "type": "long" }
+                    ]
+                  }]
+                }, {
+                  "type": "text",
+                  "matcher": "◎片　　长　([0-9]+.+)\\n",
+                  "field": [{ "path": "duration", "type": "interval" }]
+                }, {
+                  "type": "text",
+                  "matcher": "◎导　　演　(.+)\\n",
+                  "field": [{ "path": "director", "type": "keyword" }]
+                }, {
+                  "type": "text",
+                  "match_start": { "matcher": "◎主　　演　", "include": false, "required": true },
+                  "match_end": { "matcher": "◎内容简介|◎简　　介", "include": false, "required": true },
+                  "matcher": "([^\\n]+\\n)",
+                  "multivar": true,
+                  "scope": "actor"
+                }, {
+                  "type": "text",
+                  "match_start": { "matcher": "◎简　　介", "include": false, "required": true },
+                  "match_end": { "matcher": "(?:◎影片截图|下载地址)", "include": false, "required": true },
+                  "scope": "summary",
+                  "merge": {
+                    "strategy": "append",
+                    "seperator": "\n"
+                  }
                 }]
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎片　　长')]]/text()",
-                "matcher": "◎片　　长　([0-9]+.+)",
-                "field": [{ "path": "duration", "type": "interval" }]
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎导　　演')]]/text()",
-                "matcher": "◎导　　演　(.+)",
-                "field": [{ "path": "director", "type": "keyword" }]
-            }, {
-                "type": "text",
-                "xpath": ".//p[text()[contains(., '◎主　　演')]]/text()",
-                "matcher": "◎主　　演　(.+)",
-                "multivar": true,
-                "scope": "actor"
-            }, {
-                "type": "text",
-                "xpath": ".//p[preceding-sibling::p[text()[contains(., '◎主　　演')]] and following::p[text()[contains(., '◎简　　介')]]]/text()",
-                "matcher": "\\s*(.+)",
-                "multivar": true,
-                "scope": "actor"
-            }, {
-                "type": "text",
-                "xpath": ".//p[preceding-sibling::p[text()[contains(., '◎简　　介')]] and following::p[text()[contains(., '◎影片截图')]]]/text()",
-                "scope": "summary",
-                "merge": {
-                  "strategy": "append",
-                  "seperator": "\n"
-                }
             }, {
                 "type": "text",
                 "xpath": ".//table[preceding-sibling::p[text()[contains(., '◎影片截图')]]]//tr/td/a/@href",
