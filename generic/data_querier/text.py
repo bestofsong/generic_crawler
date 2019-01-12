@@ -54,6 +54,8 @@ def query(query_node, c):
                         if subs is None:
                             continue
                         subs = subs.strip()
+                        if len(subs) == 0:
+                            continue
                         if is_multivar:
                             ctx_data.append(subs)
                         else:
@@ -73,6 +75,8 @@ def query(query_node, c):
                         if str_value is None:
                             continue
                         str_value = str_value.strip()
+                        if len(str_value) == 0:
+                            continue
                         value = from_str(str_value, type_)
                         obj[prop] = value
                     if is_multivar:

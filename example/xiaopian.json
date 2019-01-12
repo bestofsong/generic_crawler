@@ -34,7 +34,7 @@
             "xpath": ".//div[@id='Zoom']",
             "query": [{
               "type": "attr",
-              "xpath": "p[not(preceding-sibling::p[text()[contains(., '◎译　　名')]])]/img",
+              "xpath": "p[not(preceding-sibling::p[text()[contains(., '◎译\\s*?名')]])]/img",
               "field": {
                 "src": {
                   "path": "poster",
@@ -47,34 +47,34 @@
               "query": [
                 {
                   "type": "text",
-                  "matcher": "◎片　　名　(.+)\\n",
+                  "matcher": "\\n?\\s*?◎?片\\s*?名：?\\s*?(.+)\\n",
                   "field": { "path": "name", "type": "text" }
                 }, {
                   "type": "text",
-                  "matcher": "◎年　　代　.*?(\\d\\d\\d\\d)\\n",
+                  "matcher": "\\n?\\s*?◎?年\\s*?代\\s*?.*?(\\d\\d\\d\\d)\\n",
                   "field": {
                     "path": "year",
                     "type": "int"
                   }
                 }, {
                   "type": "text",
-                  "matcher": "◎产　　地　(.+)\\n",
+                  "matcher": "\\n?\\s*?◎?(?:产\\s*?地|地\\s*?区：)\\s*?(.+)\\n",
                   "field": { "path": "region", "type": "text" }
                 }, {
                   "type": "text",
-                  "matcher": "◎类　　别　(.+)\\n",
+                  "matcher": "\\n?\\s*?◎?类\\s*?别\\s*?(.+)\\n",
                   "field": { "path": "category", "type": "keyword" }
                 }, {
                   "type": "text",
-                  "matcher": "◎语　　言　(.+)\\n",
+                  "matcher": "\\n?\\s*?◎?语\\s*?言\\s*?(.+)\\n",
                   "field": { "path": "language", "type": "keyword" }
                 }, {
                   "type": "text",
-                  "matcher": "◎字　　幕　(.+)\\n",
+                  "matcher": "\\n?\\s*?◎?字\\s*?幕\\s*?(.+)\\n",
                   "field": { "path": "subtitle_lang", "type": "string" }
                 }, {
                   "type": "text",
-                  "matcher": "◎上映日期\\s*([-0-9]+)\\(([^(]+)\\)(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?\\s*\\n",
+                  "matcher": "\\n?\\s*?◎?上映(?:日期|：)?\\s*([-0-9]+)\\(([^(]+)\\)(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?\\s*\\n",
                   "scope": "release_date",
                   "multivar": true,
                   "field": [
@@ -86,7 +86,7 @@
                   "scope": "rating",
                   "query": [{
                     "type": "text",
-                    "matcher": "◎豆瓣评分　([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n",
+                    "matcher": "\\n?\\s*?◎?豆瓣评分\\s*?([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n",
                     "scope": "douban",
                     "field": [
                       { "path": "score", "type": "float" },
@@ -95,7 +95,7 @@
                     ]
                   }, {
                     "type": "text",
-                    "matcher": "◎IMDb评分　([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n",
+                    "matcher": "\\n?\\s*?◎?IMDb评分\\s*?([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n",
                     "scope": "imdb",
                     "field": [
                       { "path": "score", "type": "float" },
@@ -105,23 +105,23 @@
                   }]
                 }, {
                   "type": "text",
-                  "matcher": "◎片　　长　([0-9]+.+)\\n",
+                  "matcher": "\\n?\\s*?◎?片\\s*?长\\s+?([0-9]+.+)\\n",
                   "field": [{ "path": "duration", "type": "interval" }]
                 }, {
                   "type": "text",
-                  "matcher": "◎导　　演　(.+)\\n",
+                  "matcher": "\\n?\\s*?◎?导\\s*?演：?\\s*?(.+)\\n",
                   "field": [{ "path": "director", "type": "keyword" }]
                 }, {
                   "type": "text",
-                  "match_start": { "matcher": "◎主　　演　", "include": false, "required": true },
-                  "match_end": { "matcher": "◎内容简介|◎简　　介", "include": false, "required": true },
+                  "match_start": { "matcher": "(\\n?\\s*?◎?主\\s*?演：?|\\n?\\s*?◎?演\\s*?员)", "include": false, "required": true },
+                  "match_end": { "matcher": "(\\n?\\s*?◎?内容简介|\\n?\\s*?◎?简\\s*?介|\\n?\\s*?◎?影片介绍|\\n?\\s*?◎?(?:影片)?剧\\s*?情|\\n?\\s*?剧情介绍：|\\n\\s*?影片截图：)", "include": false, "required": true },
                   "matcher": "([^\\n]+\\n)",
                   "multivar": true,
                   "scope": "actor"
                 }, {
                   "type": "text",
-                  "match_start": { "matcher": "◎简　　介", "include": false, "required": true },
-                  "match_end": { "matcher": "(?:◎影片截图|下载地址)", "include": false, "required": true },
+                  "match_start": { "matcher": "(\\n?\\s*?◎?内容简介|\\n?\\s*?◎?简\\s*?介|\\n?\\s*?◎?影片介绍|\\n?\\s*?◎?(?:影片)?剧\\s*?情|\\n?\\s*?剧情介绍：|\\n\\s*?影片截图：)", "include": false, "required": true },
+                  "match_end": { "matcher": "(?:\\n?\\s*?◎?影片截图|下载地址)", "include": false, "required": true },
                   "scope": "summary",
                   "merge": {
                     "strategy": "append",

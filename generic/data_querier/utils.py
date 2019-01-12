@@ -8,13 +8,14 @@ def extract_text(t = '', match_start = None, match_end = None):
         p1 = re.compile(match_start['matcher'], re.I | re.S)
         m1 = p1.search(t)
         if m1 is None or (m1.start() < 0 and match_start.get('required', False)):
-            return ''
+            raise ValueError('start match(%s) not met: %s' % (match_start['matcher'], t))
         left_include = match_start.get('include', True)
         left_index = m1.start() if left_include else m1.end()
     if match_end is not None:
         p2 = re.compile(match_end['matcher'], re.I | re.S)
         m2 = p2.search(t)
         if m2 is None or (m2.start() < 0 and match_end.get('required', False)):
+            raise ValueError('end match(%s) not met: %s' % (match_end['matcher'], t))
             return ''
         right_include = match_end.get('include', True)
         right_index = m2.end() if right_include else m2.start()
