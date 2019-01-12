@@ -1,0 +1,161 @@
+{
+  "name": "top_question",
+  "link": null,
+  "query": {
+    "type": "comp",
+    "xpath": "//div[@class='container']//div[@id='content']//div[@id='mainbar']/div[@id='qlist-wrapper']/div[@id='question-mini-list']/div/div[@class='question-summary narrow']",
+    "query": [
+      {
+        "type": "attr",
+        "field": {
+          "id": {
+            "path": "id",
+            "matcher": "question-summary-([0-9]+)",
+            "type": "number"
+          }
+        }
+      },
+      {
+        "type": "attr",
+        "xpath": "div[@class='cp']/div[contains(@class, 'status')]",
+        "field": {
+          "class": {
+            "path": "status",
+            "matcher": "status (\\w+)",
+            "type": "keyword"
+          }
+        }
+      },
+      {
+        "type": "text",
+        "xpath": "div[@class='summary']/div[@class='bounty-indicator']/text()",
+        "matcher": "([0-9]+)",
+        "field": { "path": "bounty", "type": "number" }
+      },
+      {
+        "type": "link",
+        "xpath": "div[@class='summary']//a[@class='question-hyperlink']/@href",
+        "query": {
+          "type": "comp",
+          "xpath": "//div[@class='container']/div[@id='content']//div[@class='inner-content clearfix']",
+          "query": [
+            {
+              "type": "attr",
+              "xpath": "div[@id='question-header']//a[@class='question-hyperlink']",
+              "field": {
+                "href": {
+                  "path": "url",
+                  "type": "text"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "xpath": "div[@id='question-header']//a[@class='question-hyperlink']/text()",
+              "field": { "path": "title", "type": "text" }
+            },
+            {
+              "type": "comp",
+              "xpath": "div[@id='sidebar']/div[@class='module question-stats']/table[@id='qinfo']",
+              "scope": "stats",
+              "query": [
+                {
+                  "type": "text",
+                  "xpath": "//tr/td[preceding-sibling::td/p[text() = 'asked']][1]/p//time/@datetime",
+                  "field": { "path": "posted_at", "type": "timestamp" }
+                },
+                {
+                  "type": "text",
+                  "xpath": "//tr/td[preceding-sibling::td/p[text() = 'viewed']][1]/p//b/text()",
+                  "matcher": "([0-9]+)",
+                  "field": { "path": "viewed", "type": "number" }
+                },
+                {
+                  "type": "comp",
+                  "scope": "last_activity",
+                  "xpath": "//tr/td[preceding-sibling::td/p[text() = 'active']][1]/p//a",
+                  "query": {
+                    "type": "attr",
+                    "field": {
+                      "href": {
+                        "path": "url",
+                        "type": "keyword"
+                      },
+                      "title": {
+                        "path": "time",
+                        "type": "timestamp"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "comp",
+              "xpath": "//div[@id='mainbar']",
+              "query": [
+                {
+                  "type": "text",
+                  "xpath": "div[@class='question']/div[@class='post-layout']/div[2]/div[@class='post-text']//*/text()",
+                  "merge": { "strategy": "append" },
+                  "scope": "content"
+                },
+                {
+                  "type": "comp",
+                  "xpath": "div[@id='answers']/div[@class = 'answer accepted-answer' or @class = 'answer']",
+                  "scope": "answers",
+                  "multivar": true,
+                  "query": [
+                    {
+                      "type": "text",
+                      "xpath": "@class",
+                      "matcher": "accepted-answer",
+                      "field": { "path": "is_accepted", "type": "boolean" }
+                    },
+                    {
+                      "type": "attr",
+                      "field": {
+                        "data-answerid": {
+                          "path": "id",
+                          "type": "number"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "xpath": ".//div[@class='post-text']//text()",
+                      "merge": { "strategy": "append" },
+                      "scope": "content"
+                    },
+                    {
+                      "type": "text",
+                      "xpath": ".//div[starts-with(@class,'user-info')]//div[@class='user-action-time']/span/@title",
+                      "field": { "path": "posted_at", "type": "timestamp" }
+                    },
+                    {
+                      "type": "comp",
+                      "xpath": ".//div[starts-with(@class, 'user-info')]//div[@class='user-details']//a",
+                      "scope": "author",
+                      "query": [
+                        {
+                          "type": "text",
+                          "xpath": "text()",
+                          "field": { "path": "name", "type": "text" }
+                        },
+                        {
+                          "type": "text",
+                          "xpath": "@href",
+                          "field": { "path": "url", "type": "keyword" }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

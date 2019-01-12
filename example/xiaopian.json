@@ -1,0 +1,153 @@
+{
+  "name": "xiaopian_video",
+  "link": "//div[@class='contain']/div[@class='bd2']/div[@class='bd3']/div[@class='bd3r']/div[@class='co_area2']/div[@class='co_content8']/div/a[text() = '下一页']/@href",
+  "query": {
+    "type": "comp",
+    "xpath": "//div[@class='co_content8']/ul//table",
+    "query": [
+      {
+        "type": "text",
+        "xpath": ".//tr[3]/td[2]/font[@*]/text()",
+        "matcher": "日期：(?:[-0-9]+)\\s*点击：([0-9]+)",
+        "field": { "path": "click", "type": "number" }
+      },
+      {
+        "type": "text",
+        "xpath": ".//tr[2]/td[2]/b/a/@href",
+        "matcher": "/(\\d+)\\.",
+        "field": { "path": "id", "type": "number" }
+      },
+      {
+        "type": "link",
+        "xpath": ".//tr[2]/td[2]/b/a/@href",
+        "field": { "path": "url", "type": "text" },
+        "query": {
+          "type": "comp",
+          "xpath": "//div[@class='bd2']/div[@class='bd3']/div[@class='co_area2']/div[@class='co_content8']",
+          "query": [{
+            "type": "text",
+            "xpath": ".//ul[1]/div[@class='position']/span[@class='updatetime']/text()",
+            "matcher": "发布时间：([-0-9]+)",
+            "field": { "path": "update_time", "type": "date" }
+          }, {
+            "type": "comp",
+            "xpath": ".//div[@id='Zoom']",
+            "query": [{
+              "type": "attr",
+              "xpath": "p[not(preceding-sibling::p[text()[contains(., '◎译　　名')]])]/img",
+              "field": {
+                "src": {
+                  "path": "poster",
+                  "type": "keyword"
+                }
+              }
+            }, {
+              "type": "text",
+              "xpath": ".//p[text()[contains(., '◎译　　名')]]/text()",
+              "matcher": "◎译　　名　(.+)",
+              "field": { "path": "translated_name", "type": "text" }
+            }, {
+              "type": "text",
+              "xpath": ".//p[text()[contains(., '◎片　　名')]]/text()",
+              "matcher": "◎片　　名　(.+)",
+              "field": { "path": "name", "type": "text" }
+            }, {
+              "type": "text",
+              "xpath": ".//p[text()[contains(., '◎年　　代')]]/text()",
+              "matcher": "◎年　　代　.*?(\\d\\d\\d\\d)",
+              "field": { "path": "year", "type": "number" }
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎产　　地')]]/text()",
+                "matcher": "◎产　　地　(.+)",
+                "field": { "path": "region", "type": "text" }
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎类　　别')]]/text()",
+                "matcher": "◎类　　别　(.+)",
+                "field": { "path": "category", "type": "keyword" }
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎语　　言')]]/text()",
+                "matcher": "◎语　　言　(.+)",
+                "field": { "path": "language", "type": "keyword" }
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎字　　幕')]]/text()",
+                "matcher": "◎字　　幕　(.+)",
+                "field": { "path": "subtitle_lang", "type": "string" }
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎上映日期')]]/text()",
+                "matcher": "([-0-9]+)\\(([^(]+)\\)",
+                "scope": "release_date",
+                "multivar": true,
+                "field": [
+                  { "path": "date", "type": "date" },
+                  { "path": "region", "type": "string" }]
+            }, {
+                "type": "scope",
+                "scope": "rating",
+                "query": [{
+                  "type": "text",
+                  "xpath": ".//p[text()[contains(., '◎豆瓣评分')]]/text()",
+                  "matcher": "◎豆瓣评分　([0-9.]+)/([0-9]+)(?: from )?([0-9]+) (?:users|votes)",
+                  "scope": "douban",
+                  "field": [
+                    { "path": "score", "type": "float" },
+                    { "path": "full_score", "type": "number" },
+                    { "path": "population", "type": "number" }
+                  ]
+                }, {
+                  "type": "text",
+                  "xpath": ".//p[text()[contains(., '◎IMDb评分')]]/text()",
+                  "matcher": "◎IMDb评分　([0-9.]+)/([0-9]+)(?: from )?([0-9]+) (?:users|votes)",
+                  "scope": "imdb",
+                  "field": [
+                    { "path": "score", "type": "float" },
+                    { "path": "full_score", "type": "number" },
+                    { "path": "population", "type": "number" }
+                  ]
+                }]
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎片　　长')]]/text()",
+                "matcher": "◎片　　长　([0-9]+.+)",
+                "field": [{ "path": "duration", "type": "interval" }]
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎导　　演')]]/text()",
+                "matcher": "◎导　　演　(.+)",
+                "field": [{ "path": "director", "type": "keyword" }]
+            }, {
+                "type": "text",
+                "xpath": ".//p[text()[contains(., '◎主　　演')]]/text()",
+                "matcher": "◎主　　演　(.+)",
+                "multivar": true,
+                "scope": "actor"
+            }, {
+                "type": "text",
+                "xpath": ".//p[preceding-sibling::p[text()[contains(., '◎主　　演')]] and following::p[text()[contains(., '◎简　　介')]]]/text()",
+                "matcher": "\\s*(.+)",
+                "multivar": true,
+                "scope": "actor"
+            }, {
+                "type": "text",
+                "xpath": ".//p[preceding-sibling::p[text()[contains(., '◎简　　介')]] and following::p[text()[contains(., '◎影片截图')]]]/text()",
+                "scope": "summary",
+                "merge": {
+                  "strategy": "append",
+                  "seperator": "\n"
+                }
+            }, {
+                "type": "text",
+                "xpath": ".//table[preceding-sibling::p[text()[contains(., '◎影片截图')]]]//tr/td/a/@href",
+                "multivar": true,
+                "scope": "video_url"
+            }]
+          }]
+        }
+      }
+    ]
+  }
+}
