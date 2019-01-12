@@ -8,9 +8,9 @@ def query(query_node, c):
     xpath = query_node['xpath']
 
     nodes = c.ctx_node.xpath(xpath)
-    print('post count: %d' % len(nodes))
+    c.logger.info('当前页对象数量: %d' % len(nodes))
     for ii, n in enumerate(nodes):
-        print(' post: %d' % ii)
+        c.logger.info(' 处理对象: %d' % ii)
         cc = c.dup()
         qc = Qc(0)
         cc.query_counter = qc
@@ -21,7 +21,6 @@ def query(query_node, c):
         qn = dict()
         qn.update(query_node)
         qn['xpath'] = '.'
-        print(qc)
         res = comp_query(qn, cc)
         if res is None:
             return
@@ -34,10 +33,6 @@ def query(query_node, c):
             qc.val = -1
             qc.unlock()
             yield d
-        elif qc.val > 0:
-            print('query_counter: %d > 0, meaning subquery is ongoing...' % qc.val)
-            qc.unlock()
         else:
-            print('query_counter: %d < 0, meaning subquery already finished, rarely happens...' % qc.val)
             qc.unlock()
 
