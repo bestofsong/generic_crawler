@@ -11,9 +11,6 @@ def query(query_node, c):
     print('post count: %d' % len(nodes))
     for ii, n in enumerate(nodes):
         print(' post: %d' % ii)
-        if ii == 1:
-            print('stop processing')
-            break
         cc = c.dup()
         qc = Qc(0)
         cc.query_counter = qc

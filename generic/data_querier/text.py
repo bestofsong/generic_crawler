@@ -27,13 +27,6 @@ def query(query_node, c):
             ctx_data[scope] = dict()
             ctx_data = ctx_data[scope]
 
-    # print(xpath)
-    # print(is_multivar)
-    # print(matcher)
-    # print(field)
-    # print(ctx_data)
-    # print(scope)
-
     node = c.ctx_node.xpath(xpath)
     for n in node:
         value = n.get()

@@ -1,9 +1,17 @@
-from .ctx import Ctx
 from .choose_querier import choose_querier
 
 def query(query_node, c):
-    scope = query_node.get('scope')
-    subq = query_node.get('query')
+    scope = query_node.get('scope', None)
+    subq = query_node.get('query', None)
+    is_multivar = query_node.get('multivar', False)
+
+    if scope is None:
+        raise ValueError('scope查询必须有scope字段')
+    if subq is None:
+        raise ValueError('scope查询必须有子查询')
+    if is_multivar:
+        raise ValueError('scope查询不支持多值')
+
     if not isinstance(subq, list):
         subq = [subq]
 
