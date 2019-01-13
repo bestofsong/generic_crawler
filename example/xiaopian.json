@@ -120,8 +120,8 @@
                   "scope": "actor"
                 }, {
                   "type": "text",
-                  "match_start": { "matcher": "(\\n?\\s*?◎?内容简介|\\n?\\s*?◎?简\\s*?介|\\n?\\s*?◎?影片介绍|\\n?\\s*?◎?(?:影片)?剧\\s*?情|\\n?\\s*?剧情介绍：|\\n\\s*?影片截图：)", "include": false, "required": true },
-                  "match_end": { "matcher": "(?:\\n?\\s*?◎?影片截图|下载地址)", "include": false, "required": true },
+                  "match_start": { "matcher": "(\\n?\\s*?◎?内容简介|\\n?\\s*?◎?简\\s*?介|\\n?\\s*?◎?影片介绍|\\n?\\s*?◎?(?:影片)?剧\\s*?情|\\n?\\s*?剧情介绍：|\\n\\s*?影片截图：)", "include": false },
+                  "match_end": { "matcher": "(?:\\n?\\s*?◎?影片截图|下载地址)", "include": false },
                   "scope": "summary",
                   "merge": {
                     "strategy": "append",
