@@ -1,0 +1,154 @@
+{
+  "name": "top_topic_article",
+  "link": null,
+  "query": {
+    "type": "comp",
+    "xpath": "//div[@id='content']/div/div[@class='article']/div[@class='main-contents']/div/div[@id='topic-items']",
+    "query": {
+      "type": "comp",
+      "xpath": "div[contains(@class, 'topic-item')]",
+      "query": [
+        {
+          "type": "comp",
+          "xpath": "div[contains(@class, 'item-meta')]/time/a",
+          "query": [
+            {
+              "type": "attr",
+              "field": {
+                "href": {
+                  "path": "id",
+                  "matcher": "uri=/note/(\\d+)/?",
+                  "type": "long"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "xpath": "text()",
+              "field": {
+                "path": "posted_at",
+                "type": "timestamp"
+              }
+            }
+          ]
+        },
+        {
+          "type": "comp",
+          "xpath": "div[contains(@class, 'item-meta')]",
+          "scope": "author",
+          "query": [
+            {
+              "type": "text",
+              "xpath": "a[@class='author']/text()",
+              "scope": "name"
+            },
+            {
+              "type": "attr",
+              "xpath": "a[@class='author_a']/img",
+              "field": {
+                "path": "avatar",
+                "type": "text"
+              }
+            }
+          ]
+        },
+        {
+          "type": "comp",
+          "xpath": "div[contains(@class, 'item-meta')]/div[@class='post-from']/a[@class='from-topic-name']",
+          "scope": "topic",
+          "query": [
+            {
+              "type": "text",
+              "scope": "name",
+              "xpath": "text()"
+            },
+            {
+              "type": "attr",
+              "field": {
+                "href": {
+                  "path": "url",
+                  "type": "text"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "comp",
+          "xpath": "div/p[starts-with(@class,'note-preview')]",
+          "query": [
+            {
+              "type": "attr",
+              "xpath": "i",
+              "field": {
+                "style": {
+                  "path": "cover",
+                  "type": "text",
+                  "matcher": "uri(\"(.+?)\")"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "xpath": ".//pre[contains(@class, 'preview-content')]/text()",
+              "scope": "content"
+            }
+          ]
+        },
+        {
+          "type": "comp",
+          "xpath": "div[@class='item-action']",
+          "query": [
+            {
+              "type": "scope",
+              "scope": "vote",
+              "query": [
+                {
+                  "type": "text",
+                  "xpath": "a[contains(@class, 'note-up')]//span/text()",
+                  "field": {
+                    "path": "up",
+                    "type": "long"
+                  }
+                },
+                {
+                  "type": "text",
+                  "xpath": "a[contains(@class, 'note-down')]//span/text()",
+                  "field": {
+                    "path": "down",
+                    "type": "long"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "comp",
+              "scope": "stats",
+              "xpath": "div[@class='item-state']",
+              "query": [
+                {
+                  "type": "text",
+                  "xpath": "a[@class='comments-count']/text()",
+                  "matcher": "(\\d+)",
+                  "field": {
+                    "path": "total_comment",
+                    "type": "long"
+                  }
+                },
+                {
+                  "type": "text",
+                  "xpath": "span/text()",
+                  "matcher": "(\\d+)",
+                  "field": {
+                    "path": "total_recommend",
+                    "type": "long"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "top_topic_article",
+  "link": null,
+  "query": {
+    "type": "comp",
+    "xpath": "//div[@class='b-content']/table[contains(@class, 'board-list')]//tbody//tr[@class!='top']",
+    "query": {
+      "type": "text",
+      "xpath": "td[@class='title_9']/a/text()",
+      "scope": "title"
+    }
+  }
+}

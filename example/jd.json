@@ -1,0 +1,59 @@
+{
+  "name": "top_topic_article",
+  "link": null,
+  "query": {
+    "type": "comp",
+    "xpath": "//*[@id='plist']/ul/li[@class='gl-item']/div[contains(@class, 'gl-i-wrap')]",
+    "query": [
+      {
+        "type": "comp",
+        "xpath": "div[@class='p-name']/a",
+        "query": [
+          {
+            "type": "text",
+            "xpath": "@href",
+            "scope": "url"
+          },
+          {
+            "type": "text",
+            "xpath": "em/text()",
+            "scope": "name"
+          }
+        ]
+      },
+      {
+        "type": "link",
+        "xpath": "div[@class='p-img']/a/@href",
+        "query": {
+          "type": "text",
+          "xpath": "//li[contains(text(), '商品编号：')]/text()",
+          "matcher": "商品编号：(\\d+)",
+          "field": {
+            "path": "code",
+            "type": "long"
+          }
+        }
+      },
+      {
+        "type": "comp",
+        "xpath": "div[@class='p-price']",
+        "scope": "price",
+        "query": [
+          {
+            "type": "text",
+            "xpath": ".//em/text()",
+            "scope": "currency"
+          },
+          {
+            "type": "text",
+            "xpath": ".//i/text()",
+            "field": {
+              "path": "value",
+              "type": "float"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
