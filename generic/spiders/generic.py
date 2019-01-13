@@ -43,7 +43,7 @@ class GenericSpider(scrapy.Spider):
         if follow_url is not None and not isinstance(follow_url, str):
             raise ValueError('下一页链接查询失败: %s' % follow_url)
         if follow_url is not None and len(follow_url) > 0:
-            yield response.follow(follow_url, self.parse)
+            yield response.follow(url=follow_url, callback=self.parse, priority=-1)
 
     def errback_httpbin(self, failure):
         # log all failures
