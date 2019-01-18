@@ -1,0 +1,33 @@
+{
+  "name": "top_topic_article",
+  "link": null,
+  "query": {
+    "type": "comp",
+    "xpath": "/html/body/div[3]/div/div/div[3]/div",
+    "query": [
+      {
+        "type": "attr",
+        "xpath": "./div[1]/a/img",
+        "field": {
+          "src": {
+            "path": "cover",
+            "type": "text"
+          }
+        }
+      },
+      {
+        "type": "text",
+        "xpath": "./div[2]/div/div[1]/a/text()",
+        "scope": "name"
+      },
+      {
+        "type": "text",
+        "xpath": "./div[2]/div/div[2]/a/text()",
+        "field": {
+          "path": "shop",
+          "type": "text"
+        }
+      }
+    ]
+  }
+}
