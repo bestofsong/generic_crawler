@@ -1,9 +1,10 @@
 import scrapy
+import os
 import json
+from ruamel.yaml import YAML
 from ..data_querier import \
     root as root_query, \
     ctx as query_ctx
-
 from scrapy.spidermiddlewares.httperror import HttpError
 from twisted.internet.error import DNSLookupError
 from twisted.internet.error import TimeoutError, TCPTimedOutError
@@ -14,16 +15,35 @@ class GenericSpider(scrapy.Spider):
     def __init__(self, name = None, **kwargs):
         scrapy.Spider.__init__(self, name, **kwargs)
 
-        if getattr(self, 'url', None) is None:
-            raise ValueError('Missing spider arg - url(starting page url). Pass that using: -a conf=xxxxxxx')
-        if getattr(self, 'conf', None) is None:
+        conf_file = getattr(self, 'conf', None)
+        if conf_file is None:
             raise ValueError('Missing spider arg - conf(config file). Pass that using: -a url=xxxxxxx')
 
-        with open(self.conf, 'r') as f:
-            self.config_data = json.load(f)
+        with open(conf_file, 'r') as conf_file_handle:
+            _name, ext = os.path.splitext(conf_file)
+            if ext == '.yml' or ext == '.yaml':
+                yaml = YAML(typ='safe')
+                self.config_data = yaml.load(conf_file_handle)
+                with open('compare.yml', 'w') as fff:
+                    yaml.dump(self.config_data, fff)
+            else:
+                self.config_data = json.load(conf_file_handle)
+
+        discover = self.config_data.get('discover', None)
+        if discover is None or discover.get('start', None) is None:
+            if getattr(self, 'url', None) is None:
+                raise ValueError('No seed url, pass -a url=xxx or add discover: { type, start, next }')
+            discover = discover if discover is not None else {'type': 'list'}
+            discover['start'] = self.url
+            self.config_data['discover'] = discover
+        if self.config_data['discover'].get('type', None) is None:
+            raise ValueError('discover.type cannot be None')
 
     def start_requests(self):
-        yield scrapy.Request(self.url, callback=self.parse,
+        url = getattr(self, 'url', None)
+        if url is None:
+            url = self.config_data['discover']['start']
+        yield scrapy.Request(url, callback=self.parse,
                              errback=self.errback_httpbin)
 
     def parse(self, response):

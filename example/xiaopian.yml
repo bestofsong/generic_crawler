@@ -1,15 +1,21 @@
 ---
 # Currently no use.
 name: xiaopian_video
-# Xpath to next page. TODO: rename
-link: "//div[@class='contain']/div[@class='bd2']/div[@class='bd3']/div[@class='bd3r']/div[@class='co_area2']/div[@class='co_content8']/div/a[text()
-  = '下 一页']/@href"
+
+# Discover page.
+discover:
+  type: list
+  start: "https://www.xiaopian.com/html/gndy/dyzz/index.html"
+  next: "//div[@class='contain']/div[@class='bd2']/div[@class='bd3']/div[@class='bd3r']/div[@class='co_area2']/div[@class='co_content8']/div/a[text() = '下 一页']/@href"
+
 # Query node describes what properties to extract, how to do that, and where to install extracted property on output object.
 # Different type of query node can be used:
 #     text: extract fields or grap directly from xpath text() node;
 #     attr: match node attributes to output fields;
 #     link: open url asynchronously then extract things from resulting page, merging back to the same output object of course;
 #     article: a complex one, concat all text from xpath query into a big text, then use regex to extract things from that big text;
+# Query node can be nested for ease of writing xpath.
+#
 query:
   type: comp
   xpath: "//div[@class='co_content8']/ul//table"
@@ -37,7 +43,7 @@ query:
       query:
       - type: text
         xpath: ".//ul[1]/div[@class='position']/span[@class='updatetime']/text()"
-        matcher: 发布时间：([-0-9]+)
+        matcher: "发布时间：([-0-9]+)"
         field:
           path: update_time
           type: date
