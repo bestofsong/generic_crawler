@@ -1,0 +1,155 @@
+---
+# Currently no use.
+name: xiaopian_video
+# Xpath to next page. TODO: rename
+link: "//div[@class='contain']/div[@class='bd2']/div[@class='bd3']/div[@class='bd3r']/div[@class='co_area2']/div[@class='co_content8']/div/a[text()
+  = '下 一页']/@href"
+# Query node describes what properties to extract, how to do that, and where to install extracted property on output object.
+# Different type of query node can be used:
+#     text: extract fields or grap directly from xpath text() node;
+#     attr: match node attributes to output fields;
+#     link: open url asynchronously then extract things from resulting page, merging back to the same output object of course;
+#     article: a complex one, concat all text from xpath query into a big text, then use regex to extract things from that big text;
+query:
+  type: comp
+  xpath: "//div[@class='co_content8']/ul//table"
+  query:
+  - type: text
+    xpath: ".//tr[3]/td[2]/font[@*]/text()"
+    matcher: 日期：(?:[-0-9]+)\s*点击：([0-9]+)
+    field:
+      path: click
+      type: long
+  - type: text
+    xpath: ".//tr[2]/td[2]/b/a/@href"
+    matcher: "/(\\d+)\\."
+    field:
+      path: id
+      type: long
+  - type: link
+    xpath: ".//tr[2]/td[2]/b/a/@href"
+    field:
+      path: url
+      type: text
+    query:
+      type: comp
+      xpath: "//div[@class='bd2']/div[@class='bd3']/div[@class='co_area2']/div[@class='co_content8']"
+      query:
+      - type: text
+        xpath: ".//ul[1]/div[@class='position']/span[@class='updatetime']/text()"
+        matcher: 发布时间：([-0-9]+)
+        field:
+          path: update_time
+          type: date
+      - type: comp
+        xpath: ".//div[@id='Zoom']"
+        query:
+        - type: attr
+          xpath: p[not(preceding-sibling::p[text()[contains(., '◎译\s*?名')]])]/img
+          field:
+            src:
+              path: poster
+              type: keyword
+        - type: article
+          xpath: ".//p/text()|.//span/text()|.//font/text()"
+          query:
+          - type: text
+            matcher: "\\n?\\s*?◎?片\\s*?名：?\\s*?(.+)\\n"
+            field:
+              path: name
+              type: text
+          - type: text
+            matcher: "\\n?\\s*?◎?年\\s*?代\\s*?.*?(\\d\\d\\d\\d)\\n"
+            field:
+              path: year
+              type: int
+          - type: text
+            matcher: "\\n?\\s*?◎?(?:产\\s*?地|地\\s*?区：)\\s*?(.+)\\n"
+            field:
+              path: region
+              type: text
+          - type: text
+            matcher: "\\n?\\s*?◎?类\\s*?别\\s*?(.+)\\n"
+            field:
+              path: category
+              type: keyword
+          - type: text
+            matcher: "\\n?\\s*?◎?语\\s*?言\\s*?(.+)\\n"
+            field:
+              path: language
+              type: keyword
+          - type: text
+            matcher: "\\n?\\s*?◎?字\\s*?幕\\s*?(.+)\\n"
+            field:
+              path: subtitle_lang
+              type: string
+          - type: text
+            matcher: "\\n?\\s*?◎?上映(?:日期|：)?\\s*([-0-9]+)\\(([^(]+)\\)(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?(?:/([-0-9]+)\\(([^(]+)\\))?\\s*\\n"
+            scope: release_date
+            multivar: true
+            field:
+            - path: date
+              type: date
+            - path: region
+              type: string
+          - type: scope
+            scope: rating
+            query:
+            - type: text
+              matcher: "\\n?\\s*?◎?豆瓣评分\\s*?([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n"
+              scope: douban
+              field:
+              - path: score
+                type: float
+              - path: full_score
+                type: int
+              - path: population
+                type: long
+            - type: text
+              matcher: "\\n?\\s*?◎?IMDb评分\\s*?([0-9.]+)/([0-9]+).*?([,0-9]+).*\\n"
+              scope: imdb
+              field:
+              - path: score
+                type: float
+              - path: full_score
+                type: int
+              - path: population
+                type: long
+          - type: text
+            matcher: "\\n?\\s*?◎?片\\s*?长\\s+?([0-9]+.+)\\n"
+            field:
+            - path: duration
+              type: interval
+          - type: text
+            matcher: "\\n?\\s*?◎?导\\s*?演：?\\s*?(.+)\\n"
+            field:
+            - path: director
+              type: keyword
+          - type: text
+            match_start:
+              matcher: "(\\n?\\s*?◎?主\\s*?演：?|\\n?\\s*?◎?演\\s*?员)"
+              include: false
+              required: true
+            match_end:
+              matcher: "(\\n?\\s*?◎?内容简介|\\n?\\s*?◎?简\\s*?介|\\n?\\s*?◎?影片介绍|\\n?\\s*?◎?(?:影片)?剧\\s*?情|\\n?\\s*?剧情介绍：|\\n\\s*?影片截图：)"
+              include: false
+              required: true
+            matcher: "([^\\n]+\\n)"
+            multivar: true
+            scope: actor
+          - type: text
+            match_start:
+              matcher: "(\\n?\\s*?◎?内容简介|\\n?\\s*?◎?简\\s*?介|\\n?\\s*?◎?影片介绍|\\n?\\s*?◎?(?:影片)?剧\\s*?情|\\n?\\s*?剧情介绍：|\\n\\s*?影片截图：)"
+              include: false
+            match_end:
+              matcher: "(?:\\n?\\s*?◎?影片截图|下载地址)"
+              include: false
+            scope: summary
+            merge:
+              strategy: append
+              seperator: "\n"
+        - type: text
+          xpath: ".//table[preceding-sibling::p[text()[contains(., '◎影片截图')]]]//tr/td/a/@href"
+          multivar: true
+          scope: video_url
+
